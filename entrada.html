@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrada de Dados — Rede Hospital Casa</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="marca">Rede Hospital Casa</div>
+    <h1>Gestão de Indicadores</h1>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Navegação</div>
+    <a href="index.html" class="nav-link">
+      <span class="icon">📊</span> Dashboard
+    </a>
+    <a href="entrada.html" class="nav-link active">
+      <span class="icon">✏️</span> Entrada de Dados
+    </a>
+    <div class="nav-section" style="margin-top:16px">Ir para</div>
+    <a href="#sec-descritivos" class="nav-link"><span class="icon">🔵</span> Descritivos</a>
+    <a href="#sec-diagnostico" class="nav-link"><span class="icon">🟢</span> Diagnóstico</a>
+    <a href="#sec-preditivos"  class="nav-link"><span class="icon">🟡</span> Preditivos</a>
+    <a href="#sec-prescritivos" class="nav-link"><span class="icon">🟣</span> Prescritivos</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div style="margin-bottom:4px;font-weight:600;color:rgba(255,255,255,.5)">Total de registros</div>
+    <div style="font-size:20px;font-weight:700;color:var(--accent);font-family:'DM Mono'" id="contador-registros">0</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title">Entrada de Dados por Unidade</div>
+    <div class="topbar-right">
+      <button class="btn btn-outline btn-sm" onclick="exportarJSON()">⬇ Exportar dados.json</button>
+      <label class="btn btn-outline btn-sm" style="cursor:pointer">
+        ⬆ Importar JSON
+        <input type="file" accept=".json" style="display:none" onchange="importarJSON(this.files[0])">
+      </label>
+      <a href="index.html" class="btn btn-primary btn-sm">📊 Ver Dashboard</a>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" data-tab="formulario" onclick="switchTab('formulario')">Inserir / Editar</button>
+      <button class="tab" data-tab="historico" onclick="switchTab('historico')">Histórico de Registros</button>
+    </div>
+
+    <!-- TAB FORMULÁRIO -->
+    <div id="tab-formulario" class="tab-content">
+
+      <!-- CABEÇALHO DO REGISTRO -->
+      <div class="panel" id="form-topo" style="margin-bottom:24px">
+        <div class="panel-header">
+          <span class="panel-title">Identificação do Registro</span>
+          <span style="font-size:12px;color:var(--cinza-4)">Selecione a unidade e o mês antes de preencher</span>
+        </div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="input-unidade">Unidade Hospitalar *</label>
+              <select id="input-unidade">
+                <option value="">Selecione a unidade</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="input-mes">Mês de Referência *</label>
+              <input type="month" id="input-mes">
+              <span class="helper">Dados serão associados a este mês</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ CAMADA 1: DESCRITIVOS ═══ -->
+      <div id="sec-descritivos" class="section-camada">
+        <div class="section-camada-header sh-desc">
+          <span>🔵</span>
+          <span>CAMADA 1 — DADOS DESCRITIVOS</span>
+          <span style="font-size:11px;font-weight:400;opacity:.7;margin-left:auto">O que aconteceu?</span>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Indicadores de Fluxo e Capacidade</span>
+            <span class="badge-camada badge-desc">Descritivos</span>
+          </div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="f-taxa_ocupacao">Taxa de Ocupação Hospitalar (%)</label>
+                <input type="number" id="f-taxa_ocupacao" placeholder="Ex: 87.5" min="0" max="100" step="0.1">
+                <span class="helper">Fórmula: (Leitos ocupados ÷ Leitos disponíveis) × 100 | Meta: 85–90%</span>
+              </div>
+              <div class="form-group">
+                <label for="f-tmp">Tempo Médio de Permanência — TMP (dias)</label>
+                <input type="number" id="f-tmp" placeholder="Ex: 4.2" min="0" step="0.1">
+                <span class="helper">Fórmula: Soma dos dias de internação ÷ Nº de saídas | Meta: ≤ 5 dias</span>
+              </div>
+              <div class="form-group">
+                <label for="f-internacoes">Número de Internações no Mês</label>
+                <input type="number" id="f-internacoes" placeholder="Ex: 312" min="0">
+                <span class="helper">Fonte: HIS — Admissões do período</span>
+              </div>
+              <div class="form-group">
+                <label for="f-volume_cirurgias">Volume de Cirurgias Realizadas</label>
+                <input type="number" id="f-volume_cirurgias" placeholder="Ex: 98" min="0">
+                <span class="helper">Fonte: HIS — Bloco Cirúrgico</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-header">
+            <span class="panel-title">Indicadores de Qualidade e Segurança</span>
+            <span class="badge-camada badge-desc">Descritivos</span>
+          </div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="f-taxa_mortalidade">Taxa de Mortalidade Geral (%)</label>
+                <input type="number" id="f-taxa_mortalidade" placeholder="Ex: 2.1" min="0" step="0.01">
+                <span class="helper">Fórmula: (Óbitos ÷ Saídas) × 100 | Meta: &lt; 3%</span>
+              </div>
+              <div class="form-group">
+                <label for="f-taxa_reinternacao">Taxa de Reinternação em 30 dias (%)</label>
+                <input type="number" id="f-taxa_reinternacao" placeholder="Ex: 8.4" min="0" step="0.1">
+                <span class="helper">Fórmula: (Reinternações 30d ÷ Total altas) × 100 | Meta: &lt; 10%</span>
+              </div>
+              <div class="form-group">
+                <label for="f-taxa_iras">Taxa de IRAS (‰ pacientes-dia)</label>
+                <input type="number" id="f-taxa_iras" placeholder="Ex: 2.3" min="0" step="0.01">
+                <span class="helper">Fórmula: (Infecções adquiridas ÷ Pacientes-dia) × 1.000 | Meta: &lt; 3‰</span>
+              </div>
+              <div class="form-group">
+                <label for="f-absenteismo">Taxa de Absenteísmo de Colaboradores (%)</label>
+                <input type="number" id="f-absenteismo" placeholder="Ex: 2.8" min="0" step="0.1">
+                <span class="helper">Fórmula: (Horas ausentes ÷ Horas previstas) × 100 | Meta: &lt; 3%</span>
+              </div>
+              <div class="form-group full">
+                <label for="f-eventos_adversos">Número de Eventos Adversos Notificados</label>
+                <input type="number" id="f-eventos_adversos" placeholder="Ex: 7" min="0">
+                <span class="helper">Fonte: Sistema de notificação / Qualis. Meta: aumentar notificação (cultura de segurança)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ CAMADA 2: DIAGNÓSTICO ═══ -->
+      <div id="sec-diagnostico" class="section-camada">
+        <div class="section-camada-header sh-diag">
+          <span>🟢</span>
+          <span>CAMADA 2 — DADOS DE DIAGNÓSTICO</span>
+          <span style="font-size:11px;font-weight:400;opacity:.7;margin-left:auto">Por que aconteceu?</span>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Status das Análises Causais</span>
+            <span class="badge-camada badge-diag">Diagnóstico</span>
+          </div>
+          <div class="panel-body">
+            <p style="font-size:12.5px;color:var(--cinza-4);margin-bottom:20px">
+              Registre o status de cada análise diagnóstica. Os dados quantitativos virão das análises realizadas no BI / Power BI.
+            </p>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="f-causa_reinternacao_status">Análise de causas de reinternação</label>
+                <select id="f-causa_reinternacao_status">
+                  <option value="">Selecione o status</option>
+                  <option>Não iniciado</option>
+                  <option>Em desenvolvimento</option>
+                  <option>Análise concluída — falha no preparo da alta</option>
+                  <option>Análise concluída — condição clínica mal controlada</option>
+                  <option>Análise concluída — outros fatores</option>
+                  <option>Implantado — monitoramento contínuo</option>
+                </select>
+                <span class="helper">Cruzar: histórico + diagnóstico + registro de alta</span>
+              </div>
+              <div class="form-group">
+                <label for="f-gargalo_pa_status">Identificação de gargalos no Pronto Atendimento</label>
+                <select id="f-gargalo_pa_status">
+                  <option value="">Selecione o status</option>
+                  <option>Não iniciado</option>
+                  <option>Em desenvolvimento</option>
+                  <option>Gargalo identificado — espera por leito</option>
+                  <option>Gargalo identificado — espera por exame</option>
+                  <option>Gargalo identificado — atendimento médico</option>
+                  <option>Implantado — monitoramento contínuo</option>
+                </select>
+                <span class="helper">Ferramenta: HIS com timestamps + Power BI</span>
+              </div>
+              <div class="form-group">
+                <label for="f-desperdicio_status">Análise de desperdício de materiais</label>
+                <select id="f-desperdicio_status">
+                  <option value="">Selecione o status</option>
+                  <option>Não iniciado</option>
+                  <option>Em desenvolvimento</option>
+                  <option>Setores críticos identificados</option>
+                  <option>Plano de ação em execução</option>
+                  <option>Implantado — monitoramento contínuo</option>
+                </select>
+                <span class="helper">Ferramenta: ERP / Excel com tabela dinâmica</span>
+              </div>
+              <div class="form-group">
+                <label for="f-iras_higiene_status">Correlação IRAS × Higiene das Mãos</label>
+                <select id="f-iras_higiene_status">
+                  <option value="">Selecione o status</option>
+                  <option>Não iniciado</option>
+                  <option>Auditoria de higiene em andamento</option>
+                  <option>Correlação identificada — sem impacto significativo</option>
+                  <option>Correlação identificada — impacto confirmado</option>
+                  <option>Implantado — monitoramento contínuo</option>
+                </select>
+                <span class="helper">Fonte: Auditorias CCIH + taxas de IRAS por setor</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ CAMADA 3: PREDITIVOS ═══ -->
+      <div id="sec-preditivos" class="section-camada">
+        <div class="section-camada-header sh-pred">
+          <span>🟡</span>
+          <span>CAMADA 3 — DADOS PREDITIVOS</span>
+          <span style="font-size:11px;font-weight:400;opacity:.7;margin-left:auto">O que vai acontecer?</span>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Status dos Modelos Preditivos</span>
+            <span class="badge-camada badge-pred">Preditivos</span>
+          </div>
+          <div class="panel-body">
+            <p style="font-size:12.5px;color:var(--cinza-4);margin-bottom:20px">
+              Registre o estágio de implantação de cada modelo preditivo. Pré-requisito: dados descritivos com ao menos 12 meses de histórico.
+            </p>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="f-pred_ocupacao_status">Previsão de ocupação dos leitos (7 dias)</label>
+                <select id="f-pred_ocupacao_status">
+                  <option value="">Status</option>
+                  <option>Não iniciado</option>
+                  <option>Pré-requisitos de dados em coleta</option>
+                  <option>Modelo em desenvolvimento</option>
+                  <option>Modelo em validação</option>
+                  <option>Implantado — em uso operacional</option>
+                </select>
+                <span class="helper">Complexidade: Média | Ferramenta: Python / Power BI + ML</span>
+              </div>
+              <div class="form-group">
+                <label for="f-pred_reinternacao_status">Probabilidade de reinternação por paciente</label>
+                <select id="f-pred_reinternacao_status">
+                  <option value="">Status</option>
+                  <option>Não iniciado</option>
+                  <option>Pré-requisitos de dados em coleta</option>
+                  <option>Modelo em desenvolvimento</option>
+                  <option>Modelo em validação</option>
+                  <option>Implantado — em uso operacional</option>
+                </select>
+                <span class="helper">Complexidade: Alta | Ferramenta: XGBoost / HIS com módulo preditivo</span>
+              </div>
+              <div class="form-group">
+                <label for="f-pred_demanda_pa_status">Previsão de demanda no Pronto Atendimento</label>
+                <select id="f-pred_demanda_pa_status">
+                  <option value="">Status</option>
+                  <option>Não iniciado</option>
+                  <option>Pré-requisitos de dados em coleta</option>
+                  <option>Modelo em desenvolvimento</option>
+                  <option>Modelo em validação</option>
+                  <option>Implantado — em uso operacional</option>
+                </select>
+                <span class="helper">Complexidade: Média | Ferramenta: Prophet / Power BI</span>
+              </div>
+              <div class="form-group">
+                <label for="f-pred_insumos_status">Previsão de consumo de insumos</label>
+                <select id="f-pred_insumos_status">
+                  <option value="">Status</option>
+                  <option>Não iniciado</option>
+                  <option>Pré-requisitos de dados em coleta</option>
+                  <option>Modelo em desenvolvimento</option>
+                  <option>Modelo em validação</option>
+                  <option>Implantado — em uso operacional</option>
+                </select>
+                <span class="helper">Complexidade: Média | Ferramenta: ERP com módulo preditivo</span>
+              </div>
+              <div class="form-group">
+                <label for="f-pred_ews_status">Early Warning Score — deterioração clínica</label>
+                <select id="f-pred_ews_status">
+                  <option value="">Status</option>
+                  <option>Não iniciado</option>
+                  <option>Pré-requisitos de dados em coleta</option>
+                  <option>Modelo em desenvolvimento</option>
+                  <option>Modelo em validação</option>
+                  <option>Implantado — em uso operacional</option>
+                </select>
+                <span class="helper">Complexidade: Alta | Ferramenta: NEWS/qSOFA no HIS</span>
+              </div>
+              <div class="form-group">
+                <label for="f-pred_absenteismo_status">Predição de absenteísmo</label>
+                <select id="f-pred_absenteismo_status">
+                  <option value="">Status</option>
+                  <option>Não iniciado</option>
+                  <option>Pré-requisitos de dados em coleta</option>
+                  <option>Modelo em desenvolvimento</option>
+                  <option>Modelo em validação</option>
+                  <option>Implantado — em uso operacional</option>
+                </select>
+                <span class="helper">Complexidade: Média | Ferramenta: Python / BI de RH</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ CAMADA 4: PRESCRITIVOS ═══ -->
+      <div id="sec-prescritivos" class="section-camada">
+        <div class="section-camada-header sh-presc">
+          <span>🟣</span>
+          <span>CAMADA 4 — DADOS PRESCRITIVOS</span>
+          <span style="font-size:11px;font-weight:400;opacity:.7;margin-left:auto">O que devemos fazer?</span>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Status das Ações Recomendadas</span>
+            <span class="badge-camada badge-presc">Prescritivos</span>
+          </div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="f-presc_leitos_status">Alocação automática de leitos</label>
+                <select id="f-presc_leitos_status">
+                  <option value="">Status</option>
+                  <option>Não iniciado</option>
+                  <option>Processo manual em revisão</option>
+                  <option>Protocolo definido — aguarda modelo preditivo</option>
+                  <option>Em implantação</option>
+                  <option>Implantado — operacional</option>
+                </select>
+                <span class="helper">Gatilho: Previsão de ocupação &gt; 90% em 3 dias</span>
+              </div>
+              <div class="form-group">
+                <label for="f-presc_escala_status">Recomendação de escala de equipe</label>
+                <select id="f-presc_escala_status">
+                  <option value="">Status</option>
+                  <option>Não iniciado</option>
+                  <option>Processo manual em revisão</option>
+                  <option>Protocolo definido — aguarda modelo preditivo</option>
+                  <option>Em implantação</option>
+                  <option>Implantado — operacional</option>
+                </select>
+                <span class="helper">Gatilho: Previsão de demanda no PA acima da média</span>
+              </div>
+              <div class="form-group">
+                <label for="f-presc_compras_status">Planejamento automático de compras</label>
+                <select id="f-presc_compras_status">
+                  <option value="">Status</option>
+                  <option>Não iniciado</option>
+                  <option>Processo manual em revisão</option>
+                  <option>Protocolo definido — aguarda modelo preditivo</option>
+                  <option>Em implantação</option>
+                  <option>Implantado — operacional</option>
+                </select>
+                <span class="helper">Gatilho: Estoque projetado abaixo do ponto de pedido</span>
+              </div>
+              <div class="form-group">
+                <label for="f-presc_alta_status">Protocolo de alta segura</label>
+                <select id="f-presc_alta_status">
+                  <option value="">Status</option>
+                  <option>Não iniciado</option>
+                  <option>Checklist em elaboração</option>
+                  <option>Protocolo definido</option>
+                  <option>Em implantação</option>
+                  <option>Implantado — operacional</option>
+                </select>
+                <span class="helper">Gatilho: Paciente com alto risco de reinternação identificado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OBSERVAÇÕES + BOTÃO -->
+      <div class="panel" style="margin-bottom:32px">
+        <div class="panel-header">
+          <span class="panel-title">Observações Gerais do Mês</span>
+        </div>
+        <div class="panel-body">
+          <div class="form-group full">
+            <label for="f-obs_geral">Contexto, intercorrências ou notas importantes</label>
+            <textarea id="f-obs_geral" rows="4"
+              style="border:1.5px solid var(--cinza-2);border-radius:var(--radius);padding:10px 14px;font-family:inherit;font-size:13.5px;resize:vertical;width:100%;outline:none;transition:.2s"
+              onfocus="this.style.borderColor='var(--azul-vivo)'"
+              onblur="this.style.borderColor='var(--cinza-2)'"
+              placeholder="Ex: Outubro com alta demanda por SRAG. Unidade 3 em reforma parcial..."></textarea>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end">
+            <button class="btn btn-outline" onclick="limparFormulario()">Limpar campos</button>
+            <button class="btn btn-success" onclick="salvarRegistro()" style="padding:10px 28px;font-size:14px">
+              ✓ Salvar Registro
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-formulario -->
+
+    <!-- TAB HISTÓRICO -->
+    <div id="tab-historico" class="tab-content" style="display:none">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Histórico de Registros</span>
+          <span style="font-size:12px;color:var(--cinza-4)">Últimos 10 registros</span>
+        </div>
+        <div class="panel-body" style="padding:0">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mês</th>
+                  <th>Unidade</th>
+                  <th>Ocupação</th>
+                  <th>TMP</th>
+                  <th>Mortalidade</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="hist-body">
+                <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--cinza-4)">Nenhum registro ainda.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <div class="panel-header">
+          <span class="panel-title">Como funciona o armazenamento</span>
+        </div>
+        <div class="panel-body">
+          <p style="font-size:13.5px;color:var(--cinza-4);line-height:1.8">
+            Os dados são salvos no <strong style="color:var(--azul-esc)">localStorage do navegador</strong> durante o trabalho.<br>
+            Para persistir definitivamente na pasta do projeto, clique em <strong style="color:var(--azul-esc)">Exportar dados.json</strong>
+            e substitua o arquivo em <code style="background:var(--cinza-1);padding:2px 6px;border-radius:4px">data/dados.json</code>.<br><br>
+            Para migrar dados entre máquinas: exporte o JSON em uma máquina e importe na outra usando o botão <strong style="color:var(--azul-esc)">Importar JSON</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+function limparFormulario() {
+  const campos = ['taxa_ocupacao','tmp','internacoes','volume_cirurgias',
+    'taxa_mortalidade','taxa_reinternacao','taxa_iras','absenteismo','eventos_adversos',
+    'causa_reinternacao_status','gargalo_pa_status','desperdicio_status','iras_higiene_status',
+    'pred_ocupacao_status','pred_reinternacao_status','pred_demanda_pa_status',
+    'pred_insumos_status','pred_ews_status','pred_absenteismo_status',
+    'presc_leitos_status','presc_escala_status','presc_compras_status','presc_alta_status',
+    'obs_geral'];
+  campos.forEach(c => {
+    const el = document.getElementById('f-' + c);
+    if (el) el.value = '';
+  });
+}
+</script>
+<script src="js/entrada.js"></script>
+</body>
+</html>

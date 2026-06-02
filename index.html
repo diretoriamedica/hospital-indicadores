@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Rede Hospital Casa</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="marca">Rede Hospital Casa</div>
+    <h1>Gestão de Indicadores</h1>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Navegação</div>
+    <a href="index.html" class="nav-link active">
+      <span class="icon">📊</span> Dashboard
+    </a>
+    <a href="entrada.html" class="nav-link">
+      <span class="icon">✏️</span> Entrada de Dados
+    </a>
+
+    <div class="nav-section" style="margin-top:16px">Camadas</div>
+    <div class="sidebar-camada"><div class="camada-dot dot-desc"></div> Descritivos</div>
+    <div class="sidebar-camada"><div class="camada-dot dot-diag"></div> Diagnóstico</div>
+    <div class="sidebar-camada"><div class="camada-dot dot-pred"></div> Preditivos</div>
+    <div class="sidebar-camada"><div class="camada-dot dot-presc"></div> Prescritivos</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div style="margin-bottom:4px;font-weight:600;color:rgba(255,255,255,.5)">Registros carregados</div>
+    <div style="font-size:20px;font-weight:700;color:var(--accent);font-family:'DM Mono'" id="total-registros">0</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-title">Dashboard de Indicadores</div>
+    <div class="topbar-right">
+      <a href="entrada.html" class="btn btn-primary">
+        <span>✏️</span> Inserir Dados
+      </a>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- FILTROS -->
+    <div class="filtros">
+      <div class="filtro-group">
+        <label>Unidade</label>
+        <select id="filtro-unidade">
+          <option value="todas">Todas as unidades</option>
+        </select>
+      </div>
+      <div class="filtro-group">
+        <label>Mês</label>
+        <select id="filtro-mes">
+          <option value="">Todos os meses</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="cards-grid" id="kpi-cards">
+      <!-- gerado por JS -->
+    </div>
+
+    <!-- GRÁFICOS -->
+    <div class="charts-grid">
+      <div class="chart-box">
+        <h3>Taxa de Ocupação Hospitalar</h3>
+        <p>Evolução mensal (média das unidades selecionadas)</p>
+        <canvas id="chart-ocupacao" height="200"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Qualidade Assistencial</h3>
+        <p>Mortalidade (%) e IRAS (‰) — evolução mensal</p>
+        <canvas id="chart-qualidade" height="200"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Comparativo por Unidade</h3>
+        <p>Indicadores principais — média do período selecionado</p>
+        <canvas id="chart-unidades" height="200"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Tempo Médio de Permanência</h3>
+        <p>Por unidade — meta ≤ 5 dias (verde) / atenção (amarelo) / crítico (vermelho)</p>
+        <canvas id="chart-tmp" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- PROGRESSO DE IMPLANTAÇÃO -->
+    <div class="panel" style="margin-bottom:24px">
+      <div class="panel-header">
+        <span class="panel-title">Progresso de Implantação por Camada</span>
+        <span style="font-size:12px;color:var(--cinza-4)">% de unidades com dados preenchidos</span>
+      </div>
+      <div class="panel-body" id="progresso-camadas">
+        <!-- gerado por JS -->
+      </div>
+    </div>
+
+    <!-- HISTÓRICO TABELA -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Histórico de Registros — Indicadores Descritivos</span>
+        <span style="font-size:12px;color:var(--cinza-4)">Últimos 20 registros</span>
+      </div>
+      <div class="panel-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mês</th>
+                <th>Unidade</th>
+                <th>Ocupação</th>
+                <th>TMP</th>
+                <th>Internações</th>
+                <th>Mortalidade</th>
+                <th>Reinternação</th>
+                <th>IRAS</th>
+                <th>Absenteísmo</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-body">
+              <tr><td colspan="10" style="text-align:center;padding:32px;color:var(--cinza-4)">
+                Nenhum dado registrado ainda. <a href="entrada.html" style="color:var(--azul-vivo)">Inserir dados →</a>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>
